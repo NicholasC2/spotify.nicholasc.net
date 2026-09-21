@@ -4,8 +4,8 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "my-spotify-worker",
-	"main": "src/index.ts",
+	"name": "spotify-status",
+	"main": "src/index.tsx",
 	"compatibility_date": "2026-09-16",
 	"observability": {
 		"enabled": true

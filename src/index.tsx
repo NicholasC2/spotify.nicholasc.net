@@ -61,9 +61,6 @@ type SpotifyCurrentlyPlaying = {
   currently_playing_type: string;
 };
 
-const DEFAULT_CLIENT_ID = "08b9a22fbc70494596574483b2fe19dd";
-const DEFAULT_CLIENT_SECRET = "39aa4703c4d44f5db14beed8a00dc83c";
-
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -267,7 +264,7 @@ export default {
 
     switch (url.pathname) {
       case "/login": {
-        const clientID = env.SPOTIFY_CLIENT_ID || DEFAULT_CLIENT_ID;
+        const clientID = env.SPOTIFY_CLIENT_ID || "";
         const params = new URLSearchParams({
           response_type: "code",
           client_id: clientID,
@@ -337,8 +334,8 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 async function spotifyPOST(env: Env, route: string, body?: URLSearchParams) {
-  const clientID = env.SPOTIFY_CLIENT_ID || DEFAULT_CLIENT_ID;
-  const clientSecret = env.SPOTIFY_CLIENT_SECRET || DEFAULT_CLIENT_SECRET;
+  const clientID = env.SPOTIFY_CLIENT_ID || "";
+  const clientSecret = env.SPOTIFY_CLIENT_SECRET || "";
 
   return fetch("https://accounts.spotify.com/api/" + route, {
     method: "POST",
