@@ -256,9 +256,11 @@ export default {
 
       return new Response(svg, {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "no-cache",
-        },
+          "Content-Type": "image/svg+xml; charset=utf-8",
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0",
+        }
       });
     }
 
