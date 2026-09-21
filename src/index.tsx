@@ -68,14 +68,11 @@ export default {
     if (url.pathname.startsWith("/user/")) {
       const accountID = url.pathname.replace("/user/", "");
 
-      const user = await env.spotify
-        .prepare(`
+      const user = await env.spotify?.prepare(`
           SELECT refresh_token
           FROM spotify_users
           WHERE account_id = ?
-        `)
-        .bind(accountID)
-        .first<{ refresh_token: string }>();
+        `)?.bind(accountID)?.first<{ refresh_token: string }>();
 
       if (!user?.refresh_token) {
         return new Response("User not found", { status: 404 });
