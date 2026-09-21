@@ -14,6 +14,13 @@
 	"vars": {
 		"SPOTIFY_CLIENT_ID": "08b9a22fbc70494596574483b2fe19dd"
 	},
+	"d1_databases": [
+		{
+			"binding": "spotify",
+			"database_name": "spotify",
+			"database_id": "ea5cb646-2189-4dbf-adff-d83e21b881dc"
+		}
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
