@@ -246,7 +246,7 @@ export default {
 									opacity: 0.7,
 									fontSize: height / 12,
 									whiteSpace: "nowrap",
-									overflow: "shown",
+									overflow: "visible",
 									textOverflow: "ellipsis",
 									display: "flex",
 									flexDirection: "row",
