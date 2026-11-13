@@ -21,6 +21,13 @@
 			"database_id": "ea5cb646-2189-4dbf-adff-d83e21b881dc"
 		}
 	],
+	"rules": [
+		{
+			"type": "Data",
+			"globs": ["**/*.png"],
+			"fallthrough": true
+		}
+	]
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
