@@ -252,7 +252,7 @@ export default {
 									flexDirection: "row",
 									alignItems: "center",
 									position: "absolute",
-									bottom: 0,
+									bottom: 5,
 									height: height / 12,
 									gap: 2
 								}}
