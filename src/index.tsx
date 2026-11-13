@@ -248,6 +248,7 @@ export default {
 									display: "flex",
 									flexDirection: "row",
 									alignItems: "center",
+									justifyContent: "center",
 									position: "absolute",
 									bottom: 0,
 									gap: 2
