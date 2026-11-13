@@ -244,16 +244,14 @@ export default {
 								style={{
 									color: "#fff",
 									opacity: 0.7,
-									fontSize: height / 12,
 									whiteSpace: "nowrap",
-									overflow: "visible",
+									overflow: "hidden",
 									textOverflow: "ellipsis",
 									display: "flex",
 									flexDirection: "row",
 									alignItems: "center",
 									position: "absolute",
 									bottom: 0,
-									height: height / 12,
 									gap: 2
 								}}
 							>
