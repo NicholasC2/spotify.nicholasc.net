@@ -217,7 +217,7 @@ export default {
 					>
 						<div
 							style={{
-								color: "inherit",
+								color: "currentColor",
 								opacity: songName ? 1 : 0.7,
 								fontSize: height / 8,
 								whiteSpace: "nowrap",
@@ -229,7 +229,7 @@ export default {
 						</div>
 						<div
 							style={{
-								color: "inherit",
+								color: "currentColor",
 								opacity: 0.7,
 								fontSize: height / 10,
 								whiteSpace: "nowrap",
@@ -242,7 +242,7 @@ export default {
 						{playing && (
 							<div
 								style={{
-									color: "inherit",
+									color: "currentColor",
 									opacity: 0.7,
 									fontSize: height / 12,
 									whiteSpace: "nowrap",
