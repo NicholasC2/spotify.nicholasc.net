@@ -1,4 +1,3 @@
-import React from "react";
 import satori from "satori";
 
 type Env = {
@@ -242,7 +241,7 @@ export default {
           height,
           fonts: [
             {
-              name: "Roboto",
+              name: "Lato",
               data: fontData,
               weight: 400,
               style: "normal",

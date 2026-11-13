@@ -21,7 +21,7 @@
   "dependencies": {
     "hono": "^4.13.18",
     "react": "^19.3.1",
-    "satori": "^0.63.2"
+    "satori": "^0.32.0"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
