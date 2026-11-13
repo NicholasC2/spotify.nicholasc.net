@@ -2,12 +2,12 @@ import satori from "satori";
 import blankImage from "./blank.png";
 
 import { Resvg, initWasm } from "@resvg/resvg-wasm";
-declare const RESVG_WASM: WebAssembly.Module;
+import wasmURL from "@resvg/resvg-wasm/index_bg.wasm";
 
 let resvgReady: Promise<void> | undefined;
 
 async function ensureResvg() {
-	resvgReady ??= initWasm(RESVG_WASM);
+	resvgReady ??= initWasm(wasmURL);
 	await resvgReady;
 }
 
