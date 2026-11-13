@@ -149,8 +149,8 @@ export default {
 				}
 			}
 
-			const width = 800;
-			const height = 100;
+			const width = 400;
+			const height = 150;
 
 			const fontData = await fetch(
 				"https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf"
