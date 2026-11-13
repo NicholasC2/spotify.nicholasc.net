@@ -162,7 +162,6 @@ export default {
 					height={height / 12}
 					viewBox="0 0 20 20"
 					fill="#fff"
-					style={{height: "100%"}}
 				>
 					<path d="M0 19h4V5H0v14zm8-14v14h4V5H8z" />
 				</svg>
@@ -174,7 +173,6 @@ export default {
 					height={height / 12}
 					viewBox="0 0 20 20"
 					fill="#fff"
-					style={{height: "100%"}}
 				>
 					<path d="M0 5v14l11-7z" />
 				</svg>
@@ -255,11 +253,14 @@ export default {
 									alignItems: "center",
 									position: "absolute",
 									bottom: 0,
+									height: height / 12,
 									gap: 2
 								}}
 							>
 								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
-								{playing.is_playing ? " Playing" : " Paused"}
+								<span>
+									{playing.is_playing ? " Playing" : " Paused"}
+								</span>
 							</div>
 						)}
 					</div>
