@@ -200,7 +200,7 @@ export default {
 							minWidth: 0,
 							display: "flex",
 							flexDirection: "column",
-							justifyContent: "end",
+							justifyContent: "flex-end",
 							gap: 4,
 							overflow: "hidden",
 						}}
@@ -218,6 +218,7 @@ export default {
 									alignItems: "center",
 									position: "absolute",
 									top: 0,
+									right: 0,
 								}}
 							>
 								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
