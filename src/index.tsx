@@ -1,368 +1,368 @@
-import { readFileSync } from "fs";
 import satori from "satori";
+import blankImage from "./blank.png";
 
 type Env = {
-  spotify: D1Database;
-  SPOTIFY_CLIENT_ID?: string;
-  SPOTIFY_CLIENT_SECRET?: string;
+	spotify: D1Database;
+	SPOTIFY_CLIENT_ID?: string;
+	SPOTIFY_CLIENT_SECRET?: string;
 };
 
 type SpotifyExternalURLs = {
-  external_urls: {
-    spotify?: string;
-  };
+	external_urls: {
+		spotify?: string;
+	};
 };
 
 type SpotifyArtist = {
-  href: string;
-  id: string;
-  name: string;
-  type: string;
-  uri: string;
+	href: string;
+	id: string;
+	name: string;
+	type: string;
+	uri: string;
 };
 
 type SpotifyImage = {
-  height: number;
-  width: number;
-  url: string;
+	height: number;
+	width: number;
+	url: string;
 };
 
 type SpotifyCurrentlyPlaying = {
-  is_playing: boolean;
-  timestamp: number;
-  progress_ms: number;
-  item: SpotifyExternalURLs & {
-    album: SpotifyExternalURLs & {
-      album_type: string;
-      artists: SpotifyArtist[];
-      href: string;
-      id: string;
-      images: SpotifyImage[];
-      name: string;
-      release_date: string;
-      release_date_precision: string;
-      total_tracks: number;
-      type: string;
-      uri: string;
-    };
-    artists: SpotifyArtist[];
-    disc_number: number;
-    duration_ms: number;
-    explicit: boolean;
-    href: string;
-    id: string;
-    is_local: boolean;
-    name: string;
-    preview_url: string | null;
-    track_number: number;
-    type: string;
-    uri: string;
-  };
-  currently_playing_type: string;
+	is_playing: boolean;
+	timestamp: number;
+	progress_ms: number;
+	item: SpotifyExternalURLs & {
+		album: SpotifyExternalURLs & {
+			album_type: string;
+			artists: SpotifyArtist[];
+			href: string;
+			id: string;
+			images: SpotifyImage[];
+			name: string;
+			release_date: string;
+			release_date_precision: string;
+			total_tracks: number;
+			type: string;
+			uri: string;
+		};
+		artists: SpotifyArtist[];
+		disc_number: number;
+		duration_ms: number;
+		explicit: boolean;
+		href: string;
+		id: string;
+		is_local: boolean;
+		name: string;
+		preview_url: string | null;
+		track_number: number;
+		type: string;
+		uri: string;
+	};
+	currently_playing_type: string;
 };
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const url = new URL(request.url);
+	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+		const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/user/")) {
-      const accountID = url.pathname.replace("/user/", "");
+		if (url.pathname.startsWith("/user/")) {
+			const accountID = url.pathname.replace("/user/", "");
 
-      const user = await env.spotify?.prepare(`
-          SELECT refresh_token
-          FROM spotify_users
-          WHERE account_id = ?
-        `)?.bind(accountID)?.first<{ refresh_token: string }>();
+			const user = await env.spotify?.prepare(`
+				SELECT refresh_token
+				FROM spotify_users
+				WHERE account_id = ?
+			`)?.bind(accountID)?.first<{ refresh_token: string }>();
 
-      if (!user?.refresh_token) {
-        return new Response("User not found", { status: 404 });
-      }
+			if (!user?.refresh_token) {
+				return new Response("User not found", { status: 404 });
+			}
 
-      const tokenRes = await spotifyPOST(
-        env,
-        "token",
-        new URLSearchParams({
-          grant_type: "refresh_token",
-          refresh_token: user.refresh_token,
-        })
-      );
+			const tokenRes = await spotifyPOST(
+				env,
+				"token",
+				new URLSearchParams({
+					grant_type: "refresh_token",
+					refresh_token: user.refresh_token,
+				})
+			);
 
-      const tokenData = (await tokenRes.json()) as { access_token?: string };
+			const tokenData = (await tokenRes.json()) as { access_token?: string };
 
-      if (!tokenData.access_token) {
-        return new Response("Token acquisition failed!", { status: 500 });
-      }
+			if (!tokenData.access_token) {
+				return new Response("Token acquisition failed!", { status: 500 });
+			}
 
-      const response = await fetch(
-        "https://api.spotify.com/v1/me/player/currently-playing",
-        {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`,
-          },
-        }
-      );
+			const response = await fetch(
+				"https://api.spotify.com/v1/me/player/currently-playing",
+				{
+					headers: {
+						Authorization: `Bearer ${tokenData.access_token}`,
+					},
+				}
+			);
 
-      let playing: SpotifyCurrentlyPlaying | null = null;
-      if (response.status === 200) {
-        playing = (await response.json()) as SpotifyCurrentlyPlaying;
-      }
+			let playing: SpotifyCurrentlyPlaying | null = null;
 
-      let songName: string | null = null;
-      let artists = "";
-      let imageURL;
+			if (response.status === 200) {
+				playing = (await response.json()) as SpotifyCurrentlyPlaying;
+			}
 
-      if (playing) {
-        if (playing.item.album.images.length > 0) {
-          const largestImage = playing.item.album.images.reduce((largest, current) =>
-            current.width > largest.width ? current : largest
-          );
-          imageURL = largestImage.url;
-        }
+			let songName: string | null = null;
+			let artists = "";
+			let imageURL;
 
-        songName = playing.item.name;
-        artists = playing.item.artists.map((a) => a.name).join(", ");
-      }
+			if (playing) {
+				if (playing.item.album.images.length > 0) {
+					const largestImage = playing.item.album.images.reduce((largest, current) =>
+						current.width > largest.width ? current : largest
+					);
+					imageURL = largestImage.url;
+				}
 
-      // Convert image to base64 so Satori can safely parse it inside Edge workers
-      let imageBase64: string | undefined = readFileSync("./blank.png").toString("base64");
+				songName = playing.item.name;
+				artists = playing.item.artists.map((a) => a.name).join(", ");
+			}
 
-      if(imageURL) {
-        try {
-          const imgFetch = await fetch(imageURL);
+			// Convert image to base64 so Satori can safely parse it inside Edge workers
+			let imageBase64: string | undefined;
 
-          if (!imgFetch.ok) {
-            throw new Error(`Image fetch failed: ${imgFetch.status}`);
-          }
+			if (imageURL) {
+				try {
+					const imgFetch = await fetch(imageURL);
 
-          const mimeType = imgFetch.headers.get("content-type") || "";
+					if (!imgFetch.ok) {
+						throw new Error(`Image fetch failed: ${imgFetch.status}`);
+					}
 
-          if (!mimeType.startsWith("image/")) {
-            throw new Error(`Invalid image content type: ${mimeType}`);
-          }
+					const mimeType = imgFetch.headers.get("content-type") || "";
 
-          const imgBuffer = await imgFetch.arrayBuffer();
-          const bytes = new Uint8Array(imgBuffer);
+					if (!mimeType.startsWith("image/")) {
+						throw new Error(`Invalid image content type: ${mimeType}`);
+					}
 
-          let binary = "";
+					const imgBuffer = await imgFetch.arrayBuffer();
+					const bytes = new Uint8Array(imgBuffer);
 
-          for (let i = 0; i < bytes.length; i += 8192) {
-            binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-          }
+					let binary = "";
 
-          imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
-        } catch (e) {
-          console.error("Failed to fetch image binary:", e);
-        }
-      }
+					for (let i = 0; i < bytes.length; i += 8192) {
+						binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+					}
 
-      const width = 800;
-      const height = 200;
+					imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
+				} catch (e) {
+					console.error("Failed to fetch image binary:", e);
+				}
+			}
 
-      const fontData = await fetch(
-        "https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf"
-      ).then((res) => res.arrayBuffer());
+			const width = 800;
+			const height = 200;
 
-      const PlayIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-        </svg>
-      );
+			const fontData = await fetch(
+				"https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf"
+			).then((res) => res.arrayBuffer());
 
-      const PauseIcon = () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      );
+			const PlayIcon = () => (
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+					<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+				</svg>
+			);
 
-      const svg = await satori(
-        <div
-          style={{
-            width,
-            height,
-            display: "flex",
-            flexDirection: "row",
-            backgroundColor: "#181818",
-            padding: 12,
-            boxSizing: "border-box",
-            fontFamily: "Roboto",
-            gap: 12,
-            overflow: "hidden",
-            borderRadius: 8,
-          }}
-        >
-          {imageBase64 && (
-            <img
-              src={imageBase64}
-              style={{
-                height: "100%",
-                aspectRatio: "1 / 1",
-                borderRadius: 8,
-                background: "#404040",
-                objectFit: "cover",
-              }}
-            />
-          )}
+			const PauseIcon = () => (
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+					<path d="M8 5v14l11-7z" />
+				</svg>
+			);
 
-          <div
-            style={{
-              position: "relative",
-              flex: 1,
-              minWidth: 0,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              gap: 4,
-              overflow: "hidden",
-            }}
-          >
-            {playing && (
-              <div
-                style={{
-                  color: "#ffffff",
-                  fontSize: height / 12,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  position: "absolute",
-                  top: 0,
-                }}
-              >
-                {playing.is_playing ? <PlayIcon /> : <PauseIcon />}
-                {playing.is_playing ? " Playing" : " Paused"}
-              </div>
-            )}
-            <div
-              style={{
-                color: songName ? "#1DB954" : "#6b6b6b",
-                fontSize: height / 8,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {songName ?? "Nothing is Playing"}
-            </div>
-            <div
-              style={{
-                color: "#ffffff",
-                fontSize: height / 10,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {artists}
-            </div>
-          </div>
-        </div>,
-        {
-          width,
-          height,
-          fonts: [
-            {
-              name: "Lato",
-              data: fontData,
-              weight: 400,
-              style: "normal",
-            },
-          ],
-        }
-      );
+			const svg = await satori(
+				<div
+					style={{
+						width,
+						height,
+						display: "flex",
+						flexDirection: "row",
+						backgroundColor: "#181818",
+						padding: 12,
+						boxSizing: "border-box",
+						fontFamily: "Roboto",
+						gap: 12,
+						overflow: "hidden",
+						borderRadius: 8,
+					}}
+				>
+					<img
+						src={imageBase64 ?? blankImage}
+						style={{
+							height: "100%",
+							aspectRatio: "1 / 1",
+							borderRadius: 8,
+							background: "#404040",
+							objectFit: "cover",
+						}}
+					/>
 
-      return new Response(svg, {
-        headers: {
-          "Content-Type": "image/svg+xml; charset=utf-8",
-          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          "Pragma": "no-cache",
-          "Expires": "0",
-        }
-      });
-    }
+					<div
+						style={{
+							position: "relative",
+							flex: 1,
+							minWidth: 0,
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							gap: 4,
+							overflow: "hidden",
+						}}
+					>
+						{playing && (
+							<div
+								style={{
+									color: "#ffffff",
+									fontSize: height / 12,
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									display: "flex",
+									flexDirection: "row",
+									alignItems: "center",
+									position: "absolute",
+									top: 0,
+								}}
+							>
+								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
+								{playing.is_playing ? " Playing" : " Paused"}
+							</div>
+						)}
+						<div
+							style={{
+								color: songName ? "#1DB954" : "#6b6b6b",
+								fontSize: height / 8,
+								whiteSpace: "nowrap",
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+							}}
+						>
+							{songName ?? "Nothing is Playing"}
+						</div>
+						<div
+							style={{
+								color: "#ffffff",
+								fontSize: height / 10,
+								whiteSpace: "nowrap",
+								overflow: "hidden",
+								textOverflow: "ellipsis",
+							}}
+						>
+							{artists}
+						</div>
+					</div>
+				</div>,
+				{
+					width,
+					height,
+					fonts: [
+						{
+							name: "Lato",
+							data: fontData,
+							weight: 400,
+							style: "normal",
+						},
+					],
+				}
+			);
 
-    switch (url.pathname) {
-      case "/login": {
-        const clientID = env.SPOTIFY_CLIENT_ID || "";
-        const params = new URLSearchParams({
-          response_type: "code",
-          client_id: clientID,
-          scope: "user-read-currently-playing user-read-playback-state",
-          redirect_uri: url.origin + "/callback",
-        });
+			return new Response(svg, {
+				headers: {
+					"Content-Type": "image/svg+xml; charset=utf-8",
+					"Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+					Pragma: "no-cache",
+					Expires: "0",
+				},
+			});
+		}
 
-        return Response.redirect("https://accounts.spotify.com/authorize?" + params.toString());
-      }
+		switch (url.pathname) {
+			case "/login": {
+				const clientID = env.SPOTIFY_CLIENT_ID || "";
+				const params = new URLSearchParams({
+					response_type: "code",
+					client_id: clientID,
+					scope: "user-read-currently-playing user-read-playback-state",
+					redirect_uri: url.origin + "/callback",
+				});
 
-      case "/callback": {
-        const code = url.searchParams.get("code");
-        if (!code) return new Response("no code!");
+				return Response.redirect("https://accounts.spotify.com/authorize?" + params.toString());
+			}
 
-        const tokenRes = await spotifyPOST(
-          env,
-          "token",
-          new URLSearchParams({
-            grant_type: "authorization_code",
-            code,
-            redirect_uri: url.origin + "/callback",
-          })
-        );
+			case "/callback": {
+				const code = url.searchParams.get("code");
 
-        const tokenData = (await tokenRes.json()) as {
-          access_token?: string;
-          refresh_token?: string;
-        };
+				if (!code) return new Response("no code!");
 
-        if (!tokenData.access_token) {
-          return new Response("Login failed");
-        }
+				const tokenRes = await spotifyPOST(
+					env,
+					"token",
+					new URLSearchParams({
+						grant_type: "authorization_code",
+						code,
+						redirect_uri: url.origin + "/callback",
+					})
+				);
 
-        const meRes = await fetch("https://api.spotify.com/v1/me", {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`,
-          },
-        });
+				const tokenData = (await tokenRes.json()) as {
+					access_token?: string;
+					refresh_token?: string;
+				};
 
-        const me = (await meRes.json()) as { id?: string };
+				if (!tokenData.access_token) {
+					return new Response("Login failed");
+				}
 
-        if (!me?.id) return new Response("Login failed");
+				const meRes = await fetch("https://api.spotify.com/v1/me", {
+					headers: {
+						Authorization: `Bearer ${tokenData.access_token}`,
+					},
+				});
 
-        await env.spotify
-          .prepare(`
-            INSERT INTO spotify_users (
-              account_id,
-              refresh_token
-            )
-            VALUES (?, ?)
-            ON CONFLICT(account_id)
-            DO UPDATE SET
-              refresh_token = excluded.refresh_token,
-              updated_at = unixepoch()
-          `)
-          .bind(me.id, tokenData.refresh_token)
-          .run();
+				const me = (await meRes.json()) as { id?: string };
 
-        return Response.redirect(`${url.origin}/user/${me.id}`);
-      }
+				if (!me?.id) return new Response("Login failed");
 
-      default: {
-        return Response.redirect(url.origin + "/login");
-      }
-    }
-  },
+				await env.spotify
+					.prepare(`
+						INSERT INTO spotify_users (
+							account_id,
+							refresh_token
+						)
+						VALUES (?, ?)
+						ON CONFLICT(account_id)
+						DO UPDATE SET
+							refresh_token = excluded.refresh_token,
+							updated_at = unixepoch()
+					`)
+					.bind(me.id, tokenData.refresh_token)
+					.run();
+
+				return Response.redirect(`${url.origin}/user/${me.id}`);
+			}
+
+			default: {
+				return Response.redirect(url.origin + "/login");
+			}
+		}
+	},
 } satisfies ExportedHandler<Env>;
 
 async function spotifyPOST(env: Env, route: string, body?: URLSearchParams) {
-  const clientID = env.SPOTIFY_CLIENT_ID || "";
-  const clientSecret = env.SPOTIFY_CLIENT_SECRET || "";
+	const clientID = env.SPOTIFY_CLIENT_ID || "";
+	const clientSecret = env.SPOTIFY_CLIENT_SECRET || "";
 
-  return fetch("https://accounts.spotify.com/api/" + route, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: "Basic " + btoa(clientID + ":" + clientSecret),
-    },
-    body,
-  });
+	return fetch("https://accounts.spotify.com/api/" + route, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			Authorization: "Basic " + btoa(clientID + ":" + clientSecret),
+		},
+		body,
+	});
 }
