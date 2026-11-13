@@ -160,7 +160,7 @@ export default {
 				<svg
 					width={height / 12}
 					height={height / 12}
-					viewBox="0 0 24 24"
+					viewBox="0 0 20 20"
 					fill="#b3b3b3"
 				>
 					<path d="M0 19h4V5H0v14zm8-14v14h4V5H8z" />
@@ -171,7 +171,7 @@ export default {
 				<svg
 					width={height / 12}
 					height={height / 12}
-					viewBox="0 0 24 24"
+					viewBox="0 0 20 20"
 					fill="#b3b3b3"
 				>
 					<path d="M0 5v14l11-7z" />
