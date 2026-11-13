@@ -150,7 +150,7 @@ export default {
 			}
 
 			const width = 800;
-			const height = 200;
+			const height = 100;
 
 			const fontData = await fetch(
 				"https://raw.githubusercontent.com/google/fonts/main/ofl/lato/Lato-Regular.ttf"
@@ -205,27 +205,6 @@ export default {
 							overflow: "hidden",
 						}}
 					>
-						{playing && (
-							<div
-								style={{
-									color: "#b3b3b3",
-									fontSize: height / 12,
-									whiteSpace: "nowrap",
-									overflow: "hidden",
-									textOverflow: "ellipsis",
-									display: "flex",
-									flexDirection: "row",
-									alignItems: "center",
-									position: "absolute",
-									top: 0,
-									right: 0,
-									gap: 2
-								}}
-							>
-								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
-								{playing.is_playing ? " Playing" : " Paused"}
-							</div>
-						)}
 						<div
 							style={{
 								color: songName ? "#fff" : "#b3b3b3",
@@ -248,6 +227,26 @@ export default {
 						>
 							{artists}
 						</div>
+						{playing && (
+							<div
+								style={{
+									color: "#b3b3b3",
+									fontSize: height / 12,
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									display: "flex",
+									flexDirection: "row",
+									alignItems: "center",
+									position: "absolute",
+									bottom: 0,
+									gap: 2
+								}}
+							>
+								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
+								{playing.is_playing ? " Playing" : " Paused"}
+							</div>
+						)}
 					</div>
 				</div>,
 				{
