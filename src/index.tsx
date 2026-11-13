@@ -128,31 +128,24 @@ export default {
 			let imageBase64: string | undefined;
 
 			if (imageURL) {
-				try {
-					const imgFetch = await fetch(imageURL);
+				const imgFetch = await fetch(imageURL);
 
-					if (!imgFetch.ok) {
-						throw new Error(`Image fetch failed: ${imgFetch.status}`);
-					}
-
+				if (imgFetch.ok) {
 					const mimeType = imgFetch.headers.get("content-type") || "";
 
-					if (!mimeType.startsWith("image/")) {
-						throw new Error(`Invalid image content type: ${mimeType}`);
+					if (mimeType.startsWith("image/")) {
+						const imgBuffer = await imgFetch.arrayBuffer();
+						const bytes = new Uint8Array(imgBuffer);
+
+						let binary = "";
+
+						for (let i = 0; i < bytes.length; i += 8192) {
+							binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+						}
+
+						imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
 					}
 
-					const imgBuffer = await imgFetch.arrayBuffer();
-					const bytes = new Uint8Array(imgBuffer);
-
-					let binary = "";
-
-					for (let i = 0; i < bytes.length; i += 8192) {
-						binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-					}
-
-					imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
-				} catch (e) {
-					console.error("Failed to fetch image binary:", e);
 				}
 			}
 
