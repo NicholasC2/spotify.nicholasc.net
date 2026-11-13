@@ -290,7 +290,9 @@ export default {
 			if (url.searchParams.has("png")) {
 				await ensureResvg();
 
-				const resvg = new Resvg(svg);
+				const resvg = new Resvg(svg, {
+					background: "#121212"
+				});
 				const png = resvg.render().asPng();
 
 				const pngBuffer = new ArrayBuffer(png.byteLength);
