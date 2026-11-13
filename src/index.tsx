@@ -246,13 +246,12 @@ export default {
 									opacity: 0.7,
 									fontSize: height / 12,
 									whiteSpace: "nowrap",
-									overflow: "hidden",
+									overflow: "shown",
 									textOverflow: "ellipsis",
 									display: "flex",
 									flexDirection: "row",
 									alignItems: "center",
 									position: "absolute",
-									bottom: 5,
 									height: height / 12,
 									gap: 2
 								}}
