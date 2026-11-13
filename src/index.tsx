@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import satori from "satori";
 
 type Env = {
@@ -108,7 +109,7 @@ export default {
 
       let songName: string | null = null;
       let artists = "";
-      let imageURL = "https://www.iconsdb.com/icons/download/gray/music-record-512.png";
+      let imageURL = "";
 
       if (playing) {
         if (playing.item.album.images.length > 0) {
@@ -123,33 +124,35 @@ export default {
       }
 
       // Convert image to base64 so Satori can safely parse it inside Edge workers
-      let imageBase64: string | undefined;
+      let imageBase64: string | undefined = readFileSync("./blank.png").toString("base64");
 
-      try {
-        const imgFetch = await fetch(imageURL);
+      if(imageURL) {
+        try {
+          const imgFetch = await fetch(imageURL);
 
-        if (!imgFetch.ok) {
-          throw new Error(`Image fetch failed: ${imgFetch.status}`);
+          if (!imgFetch.ok) {
+            throw new Error(`Image fetch failed: ${imgFetch.status}`);
+          }
+
+          const mimeType = imgFetch.headers.get("content-type") || "";
+
+          if (!mimeType.startsWith("image/")) {
+            throw new Error(`Invalid image content type: ${mimeType}`);
+          }
+
+          const imgBuffer = await imgFetch.arrayBuffer();
+          const bytes = new Uint8Array(imgBuffer);
+
+          let binary = "";
+
+          for (let i = 0; i < bytes.length; i += 8192) {
+            binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+          }
+
+          imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
+        } catch (e) {
+          console.error("Failed to fetch image binary:", e);
         }
-
-        const mimeType = imgFetch.headers.get("content-type") || "";
-
-        if (!mimeType.startsWith("image/")) {
-          throw new Error(`Invalid image content type: ${mimeType}`);
-        }
-
-        const imgBuffer = await imgFetch.arrayBuffer();
-        const bytes = new Uint8Array(imgBuffer);
-
-        let binary = "";
-
-        for (let i = 0; i < bytes.length; i += 8192) {
-          binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
-        }
-
-        imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
-      } catch (e) {
-        console.error("Failed to fetch image binary:", e);
       }
 
       const width = 800;
