@@ -157,13 +157,13 @@ export default {
 			).then((res) => res.arrayBuffer());
 
 			const PlayIcon = () => (
-				<svg width={height / 12} height={height / 12} viewBox="0 0 24 24" fill="#b3b3b3">
+				<svg width={height / 12} height={height / 12} viewBox={`0 0 ${height / 12} ${height / 12}`} fill="#b3b3b3">
 					<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
 				</svg>
 			);
 
 			const PauseIcon = () => (
-				<svg width={height / 12} height={height / 12} viewBox="0 0 24 24" fill="#b3b3b3">
+				<svg width={height / 12} height={height / 12} viewBox={`0 0 ${height / 12} ${height / 12}`} fill="#b3b3b3">
 					<path d="M8 5v14l11-7z" />
 				</svg>
 			);
