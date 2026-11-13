@@ -175,7 +175,6 @@ export default {
 						height,
 						display: "flex",
 						flexDirection: "row",
-						backgroundColor: "#181818",
 						padding: 12,
 						boxSizing: "border-box",
 						fontFamily: "Roboto",
@@ -190,7 +189,6 @@ export default {
 							height: "100%",
 							aspectRatio: "1 / 1",
 							borderRadius: 8,
-							background: "#404040",
 							objectFit: "cover",
 						}}
 					/>
@@ -202,7 +200,7 @@ export default {
 							minWidth: 0,
 							display: "flex",
 							flexDirection: "column",
-							justifyContent: "center",
+							justifyContent: "end",
 							gap: 4,
 							overflow: "hidden",
 						}}
@@ -211,7 +209,7 @@ export default {
 							<div
 								style={{
 									color: "#b3b3b3",
-									fontSize: height / 12,
+									fontSize: height / 4,
 									whiteSpace: "nowrap",
 									overflow: "hidden",
 									textOverflow: "ellipsis",
@@ -229,7 +227,7 @@ export default {
 						<div
 							style={{
 								color: songName ? "#fff" : "#b3b3b3",
-								fontSize: height / 8,
+								fontSize: height / 3,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
 								textOverflow: "ellipsis",
@@ -240,7 +238,7 @@ export default {
 						<div
 							style={{
 								color: "#b3b3b3",
-								fontSize: height / 10,
+								fontSize: height / 5,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
 								textOverflow: "ellipsis",
