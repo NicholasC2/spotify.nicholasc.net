@@ -210,7 +210,7 @@ export default {
 						{playing && (
 							<div
 								style={{
-									color: "#ffffff",
+									color: "#b3b3b3",
 									fontSize: height / 12,
 									whiteSpace: "nowrap",
 									overflow: "hidden",
@@ -228,7 +228,7 @@ export default {
 						)}
 						<div
 							style={{
-								color: songName ? "#1DB954" : "#6b6b6b",
+								color: songName ? "#fff" : "#b3b3b3",
 								fontSize: height / 8,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
@@ -239,7 +239,7 @@ export default {
 						</div>
 						<div
 							style={{
-								color: "#ffffff",
+								color: "#b3b3b3",
 								fontSize: height / 10,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
