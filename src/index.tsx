@@ -123,14 +123,33 @@ export default {
       }
 
       // Convert image to base64 so Satori can safely parse it inside Edge workers
-      let imageBase64 = imageURL;
+      let imageBase64: string | undefined;
+
       try {
         const imgFetch = await fetch(imageURL);
+
+        if (!imgFetch.ok) {
+          throw new Error(`Image fetch failed: ${imgFetch.status}`);
+        }
+
+        const mimeType = imgFetch.headers.get("content-type") || "";
+
+        if (!mimeType.startsWith("image/")) {
+          throw new Error(`Invalid image content type: ${mimeType}`);
+        }
+
         const imgBuffer = await imgFetch.arrayBuffer();
-        const mimeType = imgFetch.headers.get("content-type") || "image/png";
-        imageBase64 = `data:${mimeType};base64,${btoa(String.fromCharCode(...new Uint8Array(imgBuffer)))}`;
+        const bytes = new Uint8Array(imgBuffer);
+
+        let binary = "";
+
+        for (let i = 0; i < bytes.length; i += 8192) {
+          binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+        }
+
+        imageBase64 = `data:${mimeType};base64,${btoa(binary)}`;
       } catch (e) {
-        console.error("Failed to fetch image binary", e);
+        console.error("Failed to fetch image binary:", e);
       }
 
       const width = 800;
