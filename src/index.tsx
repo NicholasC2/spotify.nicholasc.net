@@ -200,7 +200,7 @@ export default {
 							minWidth: 0,
 							display: "flex",
 							flexDirection: "column",
-							justifyContent: "flex-end",
+							justifyContent: "flex-start",
 							gap: 4,
 							overflow: "hidden",
 						}}
@@ -209,7 +209,7 @@ export default {
 							<div
 								style={{
 									color: "#b3b3b3",
-									fontSize: height / 4,
+									fontSize: height / 12,
 									whiteSpace: "nowrap",
 									overflow: "hidden",
 									textOverflow: "ellipsis",
@@ -219,6 +219,7 @@ export default {
 									position: "absolute",
 									top: 0,
 									right: 0,
+									gap: 2
 								}}
 							>
 								{playing.is_playing ? <PlayIcon /> : <PauseIcon />}
@@ -228,7 +229,7 @@ export default {
 						<div
 							style={{
 								color: songName ? "#fff" : "#b3b3b3",
-								fontSize: height / 3,
+								fontSize: height / 8,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
 								textOverflow: "ellipsis",
@@ -239,7 +240,7 @@ export default {
 						<div
 							style={{
 								color: "#b3b3b3",
-								fontSize: height / 5,
+								fontSize: height / 10,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
 								textOverflow: "ellipsis",
