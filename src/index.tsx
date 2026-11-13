@@ -161,7 +161,7 @@ export default {
 					width={height / 12}
 					height={height / 12}
 					viewBox="0 0 20 20"
-					fill="#b3b3b3"
+					fill="currentColor"
 				>
 					<path d="M0 19h4V5H0v14zm8-14v14h4V5H8z" />
 				</svg>
@@ -172,7 +172,7 @@ export default {
 					width={height / 12}
 					height={height / 12}
 					viewBox="0 0 20 20"
-					fill="#b3b3b3"
+					fill="currentColor"
 				>
 					<path d="M0 5v14l11-7z" />
 				</svg>
@@ -217,7 +217,8 @@ export default {
 					>
 						<div
 							style={{
-								color: songName ? "#fff" : "#b3b3b3",
+								color: "inherit",
+								opacity: songName ? 1 : 0.7,
 								fontSize: height / 8,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
@@ -228,7 +229,8 @@ export default {
 						</div>
 						<div
 							style={{
-								color: "#b3b3b3",
+								color: "inherit",
+								opacity: 0.7,
 								fontSize: height / 10,
 								whiteSpace: "nowrap",
 								overflow: "hidden",
@@ -240,7 +242,8 @@ export default {
 						{playing && (
 							<div
 								style={{
-									color: "#b3b3b3",
+									color: "inherit",
+									opacity: 0.7,
 									fontSize: height / 12,
 									whiteSpace: "nowrap",
 									overflow: "hidden",
