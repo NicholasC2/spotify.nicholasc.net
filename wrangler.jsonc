@@ -27,7 +27,11 @@
 			"globs": ["**/*.png"],
 			"fallthrough": true
 		}
-	]
+	],
+
+	"wasm_modules": {
+		"RESVG_WASM": "./node_modules/@resvg/resvg-wasm/index_bg.wasm"
+	}
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

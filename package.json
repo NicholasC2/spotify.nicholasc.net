@@ -19,6 +19,7 @@
     "wrangler": "^4.161.0"
   },
   "dependencies": {
+    "@resvg/resvg-wasm": "^2.6.2",
     "hono": "^4.13.18",
     "react": "^19.3.1",
     "satori": "^0.32.0"

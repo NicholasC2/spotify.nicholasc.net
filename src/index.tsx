@@ -1,6 +1,16 @@
 import satori from "satori";
 import blankImage from "./blank.png";
 
+import { Resvg, initWasm } from "@resvg/resvg-wasm";
+declare const RESVG_WASM: WebAssembly.Module;
+
+let resvgReady: Promise<void> | undefined;
+
+async function ensureResvg() {
+	resvgReady ??= initWasm(RESVG_WASM);
+	await resvgReady;
+}
+
 type Env = {
 	spotify: D1Database;
 	SPOTIFY_CLIENT_ID?: string;
@@ -276,6 +286,25 @@ export default {
 					],
 				}
 			);
+
+			if (url.searchParams.has("png")) {
+				await ensureResvg();
+
+				const resvg = new Resvg(svg);
+				const png = resvg.render().asPng();
+
+				const pngBuffer = new ArrayBuffer(png.byteLength);
+				new Uint8Array(pngBuffer).set(png);
+
+				return new Response(pngBuffer, {
+					headers: {
+						"Content-Type": "image/png",
+						"Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+						Pragma: "no-cache",
+						Expires: "0",
+					},
+				});
+			}
 
 			return new Response(svg, {
 				headers: {
