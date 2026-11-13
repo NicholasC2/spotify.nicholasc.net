@@ -162,6 +162,7 @@ export default {
 					height={height / 12}
 					viewBox="0 0 20 20"
 					fill="#fff"
+					style={{height: "100%"}}
 				>
 					<path d="M0 19h4V5H0v14zm8-14v14h4V5H8z" />
 				</svg>
@@ -173,6 +174,7 @@ export default {
 					height={height / 12}
 					viewBox="0 0 20 20"
 					fill="#fff"
+					style={{height: "100%"}}
 				>
 					<path d="M0 5v14l11-7z" />
 				</svg>
