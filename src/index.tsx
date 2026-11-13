@@ -157,25 +157,25 @@ export default {
 			).then((res) => res.arrayBuffer());
 
 			const PlayIcon = () => (
-			<svg
-				width={height / 12}
-				height={height / 12}
-  				viewBox="6 0 18 24"
-				fill="#b3b3b3"
-			>
-				<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-			</svg>
+				<svg
+					width={height / 12}
+					height={height / 12}
+					viewBox="0 0 24 24"
+					fill="#b3b3b3"
+				>
+					<path d="M0 19h4V5H0v14zm8-14v14h4V5H8z" />
+				</svg>
 			);
 
 			const PauseIcon = () => (
-			<svg
-				width={height / 12}
-				height={height / 12}
-  				viewBox="6 0 18 24"
-				fill="#b3b3b3"
-			>
-				<path d="M8 5v14l11-7z" />
-			</svg>
+				<svg
+					width={height / 12}
+					height={height / 12}
+					viewBox="0 0 24 24"
+					fill="#b3b3b3"
+				>
+					<path d="M0 5v14l11-7z" />
+				</svg>
 			);
 
 			const svg = await satori(
