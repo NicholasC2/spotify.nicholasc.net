@@ -109,7 +109,7 @@ export default {
 
       let songName: string | null = null;
       let artists = "";
-      let imageURL = "";
+      let imageURL;
 
       if (playing) {
         if (playing.item.album.images.length > 0) {
